@@ -1,0 +1,3 @@
+# pnpm 11 reads its settings here (not from .npmrc).
+# Refuse package versions published less than a day ago (pnpm's default, written down on purpose).
+minimumReleaseAge: 1440
