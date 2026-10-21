@@ -1,0 +1,6 @@
+# Local folders written by Claude Code tools (brainstorming companion, session notes)
+.superpowers/
+.remember/
+
+# macOS Finder metadata
+.DS_Store

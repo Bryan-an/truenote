@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>truenote tuner screen mockup</title>
+<style>
+  :root { --text-secondary: #6e6e73; }
+  body { margin: 0; padding: 24px 16px; background: #f5f5f7; color: #1d1d1f; font-family: -apple-system, system-ui, sans-serif; }
+  h2 { text-align: center; }
+  .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<style>
+  .phone { width: 240px; background: #0e1014; border-radius: 34px; padding: 18px 16px 22px; border: 8px solid #26282d; color: #f2f2f2; margin: 0 auto; font-family: -apple-system, system-ui, sans-serif; }
+  .phone-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 11px; color: #8a8f98; margin-bottom: 4px; }
+  .brand-name { font-weight: 700; color: #f2f2f2; font-size: 13px; }
+  .meter { width: 100%; display: block; }
+  .note { text-align: center; font-size: 56px; font-weight: 700; line-height: 1; margin-top: -6px; min-height: 56px; }
+  .note .octave { font-size: 20px; color: #8a8f98; margin-left: 2px; }
+  .muted { color: #4a4d55; }
+  .cents { text-align: center; font-size: 13px; margin: 6px 0 2px; min-height: 26px; }
+  .warn { color: #ff9f0a; }
+  .ok { color: #30d158; }
+  .start { display: inline-block; background: #f2f2f2; color: #0e1014; font-weight: 700; font-size: 13px; padding: 5px 16px; border-radius: 999px; }
+  .headstock { width: 82%; display: block; margin: 6px auto 0; }
+  .caption { text-align: center; font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; max-width: 250px; }
+  .flow { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .step { display: flex; flex-direction: column; align-items: center; }
+</style>
+
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <symbol id="hs3" viewBox="0 0 200 230">
+      <g stroke="#9aa0a8" stroke-width="3">
+        <line x1="24" y1="52" x2="70" y2="52" /><line x1="24" y1="104" x2="70" y2="104" /><line x1="24" y1="156" x2="70" y2="156" />
+        <line x1="130" y1="52" x2="176" y2="52" /><line x1="130" y1="104" x2="176" y2="104" /><line x1="130" y1="156" x2="176" y2="156" />
+      </g>
+      <g fill="#c9ced6" stroke="#7d838c" stroke-width="1.5">
+        <ellipse cx="18" cy="52" rx="13" ry="10" /><ellipse cx="18" cy="104" rx="13" ry="10" /><ellipse cx="18" cy="156" rx="13" ry="10" />
+        <ellipse cx="182" cy="52" rx="13" ry="10" /><ellipse cx="182" cy="104" rx="13" ry="10" /><ellipse cx="182" cy="156" rx="13" ry="10" />
+      </g>
+      <g font-size="11" font-weight="700" fill="#22252a" text-anchor="middle" font-family="system-ui, sans-serif">
+        <text x="18" y="56">E</text><text x="18" y="108">A</text><text x="18" y="160">D</text>
+        <text x="182" y="56">E</text><text x="182" y="108">B</text><text x="182" y="160">G</text>
+      </g>
+      <path d="M 68 222 L 46 48 Q 44 14 100 16 Q 156 14 154 48 L 132 222 Z" fill="#5b3b22" stroke="#2b1a0e" stroke-width="2" />
+      <rect x="66" y="214" width="68" height="8" fill="#e8e2d0" />
+      <g stroke="#d4d4d4">
+        <line x1="72" y1="216" x2="66" y2="52" stroke-width="2" />
+        <line x1="83" y1="216" x2="70" y2="104" stroke-width="1.7" />
+        <line x1="94" y1="216" x2="74" y2="156" stroke-width="1.4" />
+        <line x1="106" y1="216" x2="126" y2="156" stroke-width="1.2" />
+        <line x1="117" y1="216" x2="130" y2="104" stroke-width="1" />
+        <line x1="128" y1="216" x2="134" y2="52" stroke-width="0.8" />
+      </g>
+      <g fill="#b9bec6">
+        <circle cx="66" cy="52" r="4.5" /><circle cx="70" cy="104" r="4.5" /><circle cx="74" cy="156" r="4.5" />
+        <circle cx="134" cy="52" r="4.5" /><circle cx="130" cy="104" r="4.5" /><circle cx="126" cy="156" r="4.5" />
+      </g>
+    </symbol>
+    <symbol id="arc" viewBox="0 0 240 140">
+      <path d="M 33.4 80 A 100 100 0 0 1 206.6 80" fill="none" stroke="#3a3d44" stroke-width="10" stroke-linecap="round" />
+      <path d="M 109.55 30.55 A 100 100 0 0 1 130.45 30.55" fill="none" stroke="#30d158" stroke-width="10" />
+      <g stroke="#6b7079" stroke-width="2">
+        <line x1="52.5" y1="91" x2="40.3" y2="84" /><line x1="57.6" y1="73.8" x2="51.6" y2="68.4" /><line x1="70.6" y1="62" x2="65.9" y2="55.6" />
+        <line x1="85.8" y1="53.3" x2="82.6" y2="46" /><line x1="102.5" y1="47.8" x2="100.9" y2="40" /><line x1="120" y1="52" x2="120" y2="38" />
+        <line x1="137.5" y1="47.8" x2="139.1" y2="40" /><line x1="154.2" y1="53.3" x2="157.4" y2="46" /><line x1="169.4" y1="62" x2="174.1" y2="55.6" />
+        <line x1="182.4" y1="73.8" x2="188.4" y2="68.4" /><line x1="187.5" y1="91" x2="199.7" y2="84" />
+      </g>
+      <g font-size="18" fill="#8a8f98" text-anchor="middle" font-family="system-ui, sans-serif">
+        <text x="36" y="114">&#9837;</text><text x="204" y="114">&#9839;</text>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<h2>truenote: tuner screen mockup (approved 2026-10-21)</h2>
+<p class="subtitle">Layout sketch, not final visual design. Chosen by the owner: 3 + 3 headstock and arc needle. See the design document, section 4.</p>
+
+<div class="flow">
+  <div class="step">
+    <div class="caption">1. Idle: tap to start</div>
+    <div class="phone">
+      <div class="phone-top"><span class="brand-name">truenote</span><span>Standard · E A D G B E</span></div>
+      <svg class="meter" viewBox="0 0 240 140">
+        <use href="#arc" />
+        <line x1="120" y1="130" x2="120" y2="42" stroke="#4a4d55" stroke-width="3.5" stroke-linecap="round" />
+        <circle cx="120" cy="130" r="7" fill="#4a4d55" />
+      </svg>
+      <div class="note muted">–</div>
+      <div class="cents"><span class="start">Tap to start</span></div>
+      <svg class="headstock" viewBox="0 0 200 230" style="opacity:0.55"><use href="#hs3" /></svg>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="caption">2. A string played slightly flat</div>
+    <div class="phone">
+      <div class="phone-top"><span class="brand-name">truenote</span><span>Standard · E A D G B E</span></div>
+      <svg class="meter" viewBox="0 0 240 140">
+        <use href="#arc" />
+        <line x1="120" y1="130" x2="98.1" y2="44.8" stroke="#ff9f0a" stroke-width="3.5" stroke-linecap="round" />
+        <circle cx="120" cy="130" r="7" fill="#c9ced6" />
+      </svg>
+      <div class="note">A<span class="octave">2</span></div>
+      <div class="cents warn">−12 cents · tune up</div>
+      <svg class="headstock" viewBox="0 0 200 230">
+        <use href="#hs3" />
+        <line x1="83" y1="216" x2="70" y2="104" stroke="#ff9f0a" stroke-width="3" />
+        <circle cx="70" cy="104" r="5.5" fill="#ff9f0a" />
+        <ellipse cx="18" cy="104" rx="17" ry="14" fill="#ff9f0a" opacity="0.3" />
+        <ellipse cx="18" cy="104" rx="13" ry="10" fill="#ff9f0a" stroke="#fff" stroke-width="1.5" />
+        <text x="18" y="108" font-size="11" font-weight="700" fill="#111" text-anchor="middle" font-family="system-ui, sans-serif">A</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="caption">3. In tune: green + ding</div>
+    <div class="phone">
+      <div class="phone-top"><span class="brand-name">truenote</span><span>Standard · E A D G B E</span></div>
+      <svg class="meter" viewBox="0 0 240 140">
+        <use href="#arc" />
+        <line x1="120" y1="130" x2="120" y2="42" stroke="#30d158" stroke-width="3.5" stroke-linecap="round" />
+        <circle cx="120" cy="130" r="7" fill="#c9ced6" />
+      </svg>
+      <div class="note ok">A<span class="octave">2</span></div>
+      <div class="cents ok">In tune ✓ &nbsp;♪ ding</div>
+      <svg class="headstock" viewBox="0 0 200 230">
+        <use href="#hs3" />
+        <line x1="83" y1="216" x2="70" y2="104" stroke="#30d158" stroke-width="3" />
+        <circle cx="70" cy="104" r="5.5" fill="#30d158" />
+        <ellipse cx="18" cy="104" rx="17" ry="14" fill="#30d158" opacity="0.3" />
+        <ellipse cx="18" cy="104" rx="13" ry="10" fill="#30d158" stroke="#fff" stroke-width="1.5" />
+        <text x="18" y="108" font-size="11" font-weight="700" fill="#111" text-anchor="middle" font-family="system-ui, sans-serif">A</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
