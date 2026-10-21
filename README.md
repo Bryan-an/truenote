@@ -1,32 +1,24 @@
-# React + TypeScript + Vite
+# truenote
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A guitar tuner for the phone, built as an installable web app (PWA) that works offline.
 
-Currently, two official plugins are available:
+Play a string and truenote detects which one it is, lights it up on a guitar headstock, and shows on an arc needle how far it is from the right pitch. When the string is in tune, it plays a short ding. Version 1 supports a six-string guitar in standard tuning (E A D G B E).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Documents
 
-## React Compiler
+- [Design spec](docs/superpowers/specs/2026-10-21-truenote-tuner-design.md): what v1 does and why.
+- [Implementation plan](docs/superpowers/plans/2026-10-21-truenote-v1.md): the steps that build it.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Running it locally
 
-## Expanding the Oxlint configuration
+You need [nvm](https://github.com/nvm-sh/nvm) and Node's Corepack, which provides the pinned pnpm version.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+nvm use        # Node 24.18.0, from .nvmrc
+pnpm install
+pnpm dev       # http://localhost:5173
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+The first `pnpm` command asks Corepack to download pnpm 11.28.6; answer yes.
+
+The other scripts (build, type check and the rest) are listed in `package.json`.
