@@ -1,0 +1,6 @@
+# Generated files
+pnpm-lock.yaml
+dist
+coverage
+# Design docs and plans keep their written layout
+docs/superpowers
