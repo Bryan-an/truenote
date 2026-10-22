@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-*: initial;
+  --color-surface: #0e1014;
+  --color-ink: #f2f2f2;
+  --color-ink-muted: #8a8f98;
+  --color-track: #3a3d44;
+  --color-tick: #6b7079;
+  --color-idle: #4a4d55;
+  --color-out-of-tune: #ff9f0a;
+  --color-in-tune: #30d158;
+  --color-wood: #5b3b22;
+  --color-wood-edge: #2b1a0e;
+  --color-peg: #c9ced6;
+  --color-peg-edge: #7d838c;
+  --color-peg-label: #22252a;
+  --color-string: #d4d4d4;
+  --color-nut: #e8e2d0;
+  --spacing-safe-top: env(safe-area-inset-top);
+  --spacing-safe-bottom: env(safe-area-inset-bottom);
+}
+
+@utility rotate-needle {
+  rotate: var(--needle-angle, 0deg);
+}
