@@ -1,10 +1,12 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["react", "typescript", "oxc", "unicorn", "import", "jsx-a11y"],
+  "jsPlugins": ["oxlint-tailwindcss"],
   "categories": { "correctness": "error" },
   "options": { "typeAware": true },
   "env": { "browser": true, "es2024": true },
   "ignorePatterns": ["dist", "node_modules", "coverage"],
+  "settings": { "tailwindcss": { "entryPoint": "src/app/index.css" } },
   "rules": {
     "react/rules-of-hooks": "error",
     "react/exhaustive-deps": "error",
@@ -24,7 +26,14 @@
     ],
     "typescript/no-floating-promises": "error",
     "typescript/no-misused-promises": "error",
-    "typescript/switch-exhaustiveness-check": "error"
+    "typescript/switch-exhaustiveness-check": "error",
+    "tailwindcss/no-unknown-classes": "error",
+    "tailwindcss/no-arbitrary-value": "error",
+    "tailwindcss/no-hardcoded-colors": "error",
+    "tailwindcss/no-conflicting-classes": "error",
+    "tailwindcss/no-duplicate-classes": "error",
+    "tailwindcss/no-deprecated-classes": "error",
+    "tailwindcss/no-dynamic-classes": "error"
   },
   "overrides": [
     {
