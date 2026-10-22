@@ -5,6 +5,8 @@ import { configDefaults, defineConfig } from "vitest/config";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  // The phone reaches the dev server through a Cloudflare quick tunnel (see the README).
+  server: { allowedHosts: [".trycloudflare.com"] },
   test: {
     projects: [
       {
