@@ -31,3 +31,7 @@ dist-ssr
 
 # Test coverage
 coverage
+
+# Cloudflare Wrangler local state and secrets
+.wrangler/
+.dev.vars

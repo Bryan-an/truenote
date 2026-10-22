@@ -2,5 +2,6 @@
 pnpm-lock.yaml
 dist
 coverage
+.wrangler
 # Design docs and plans keep their written layout
 docs/superpowers
