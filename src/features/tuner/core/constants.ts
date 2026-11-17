@@ -4,3 +4,5 @@ export const A4_MIDI_NOTE = 69;
 export const SEMITONES_PER_OCTAVE = 12;
 export const CENTS_PER_OCTAVE = 1200;
 export const OCTAVE_FREQUENCY_RATIO = 2;
+export const MIN_MIDI_NOTE = 0;
+export const MAX_MIDI_NOTE = 127;
