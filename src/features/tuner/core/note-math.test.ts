@@ -27,6 +27,18 @@ describe("midiToNoteName", () => {
   ])("names MIDI %i as %s", (midiNote, noteName) => {
     expect(midiToNoteName(midiNote)).toBe(noteName);
   });
+
+  it("names the lowest and highest MIDI notes", () => {
+    expect(midiToNoteName(0)).toBe("C");
+    expect(midiToNoteName(127)).toBe("G");
+  });
+
+  it.each([-1, 128, 69.5, Number.NaN])(
+    "throws for %d, which is not a MIDI note",
+    (midiNote) => {
+      expect(() => midiToNoteName(midiNote)).toThrow(RangeError);
+    },
+  );
 });
 
 describe("midiToOctave", () => {
@@ -54,5 +66,16 @@ describe("centsBetween", () => {
 
   it("recovers a small offset", () => {
     expect(centsBetween(atCents(110, 3), 110)).toBeCloseTo(3, 10);
+  });
+
+  it.each([
+    [0, 440],
+    [440, 0],
+    [-440, 440],
+    [440, -440],
+    [Number.NaN, 440],
+    [440, Number.POSITIVE_INFINITY],
+  ])("throws for %d Hz against %d Hz", (frequencyHz, referenceHz) => {
+    expect(() => centsBetween(frequencyHz, referenceHz)).toThrow(RangeError);
   });
 });
