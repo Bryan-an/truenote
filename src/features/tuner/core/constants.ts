@@ -17,3 +17,13 @@ export const MIN_RMS_LEVEL = 0.005;
 
 // Smoothing. A median over this many readings drops a stray octave jump of one or two frames.
 export const SMOOTHING_WINDOW_SIZE = 5;
+
+// In-tune rule. A string enters "in tune" by staying within the tolerance for the hold time, and
+// leaves only beyond the wider threshold, so it does not flicker around the edge.
+export const IN_TUNE_TOLERANCE_CENTS = 5;
+export const OUT_OF_TUNE_THRESHOLD_CENTS = 8;
+export const IN_TUNE_HOLD_MS = 500;
+// How long the last reading stays on screen after the pitch is lost.
+export const PITCH_HOLD_MS = 1500;
+// A gap this long means the string was plucked again.
+export const PITCH_LOST_MS = 200;
