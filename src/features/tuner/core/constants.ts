@@ -14,3 +14,6 @@ export const MAX_FREQUENCY_HZ = 1000;
 export const YIN_THRESHOLD = 0.15;
 // Input-level gate: anything quieter is treated as silence. Tuned on devices in Task 27.
 export const MIN_RMS_LEVEL = 0.005;
+
+// Smoothing. A median over this many readings drops a stray octave jump of one or two frames.
+export const SMOOTHING_WINDOW_SIZE = 5;
