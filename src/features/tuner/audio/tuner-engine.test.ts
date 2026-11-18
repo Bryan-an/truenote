@@ -390,6 +390,70 @@ describe("createTunerEngine", () => {
       expect(audio.contexts[0].close).toHaveBeenCalledTimes(1);
     });
 
+    it("reports an error when the audio cannot resume", async () => {
+      const audio = installFakeAudio({
+        deferMicrophone: true,
+        resumeError: new DOMException("No audio device", "InvalidStateError"),
+      });
+      const engine = createTunerEngine();
+      const start = engine.start();
+
+      // The rejection arrives while the permission prompt is still open.
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(engine.getSnapshot()).toEqual({
+        status: TUNER_STATUS.ERROR,
+        error: TUNER_ERROR.MICROPHONE_UNAVAILABLE,
+        reading: null,
+        diagnostics: null,
+      });
+
+      expect(audio.contexts[0].close).toHaveBeenCalledTimes(1);
+
+      // The stream that arrives afterwards belongs to no one.
+      audio.resolveMicrophone();
+      await start;
+
+      expect(audio.tracks[0].stop).toHaveBeenCalledTimes(1);
+      expect(audio.contexts[0].createMediaStreamSource).not.toHaveBeenCalled();
+      expect(engine.getSnapshot().status).toBe(TUNER_STATUS.ERROR);
+    });
+
+    it("does not stay listening when the audio cannot resume", async () => {
+      const audio = installFakeAudio({
+        resumeError: new DOMException("No audio device", "InvalidStateError"),
+      });
+      const engine = createTunerEngine();
+
+      await engine.start();
+      vi.advanceTimersByTime(A_FEW_FRAMES_MS);
+
+      expect(engine.getSnapshot().status).toBe(TUNER_STATUS.ERROR);
+
+      expect(engine.getSnapshot().error).toBe(
+        TUNER_ERROR.MICROPHONE_UNAVAILABLE,
+      );
+
+      expect(audio.tracks[0].stop).toHaveBeenCalledTimes(1);
+      expect(audio.contexts[0].close).toHaveBeenCalledTimes(1);
+    });
+
+    it("ignores a resume that fails because stop closed the context", async () => {
+      const audio = installFakeAudio({
+        deferMicrophone: true,
+        resumeError: new DOMException("Closed", "InvalidStateError"),
+      });
+      const engine = createTunerEngine();
+      const start = engine.start();
+
+      engine.stop();
+      audio.resolveMicrophone();
+      await start;
+
+      expect(engine.getSnapshot()).toBe(IDLE_SNAPSHOT);
+    });
+
     it("can start again after an error", async () => {
       installFakeAudio({
         microphoneError: new DOMException("Denied", "NotAllowedError"),
@@ -584,6 +648,26 @@ describe("createTunerEngine", () => {
 
       expect(listener).not.toHaveBeenCalled();
       expect(engine.getSnapshot()).toBe(IDLE_SNAPSHOT);
+    });
+
+    it("can be called from a subscriber as soon as listening begins", async () => {
+      const audio = installFakeAudio();
+      const engine = createTunerEngine();
+
+      engine.subscribe(() => {
+        if (engine.getSnapshot().status === TUNER_STATUS.LISTENING) {
+          engine.stop();
+        }
+      });
+      await engine.start();
+      vi.advanceTimersByTime(A_FEW_FRAMES_MS);
+
+      const [analyser] = audio.contexts[0].analysers;
+
+      expect(engine.getSnapshot()).toBe(IDLE_SNAPSHOT);
+      expect(audio.tracks[0].stop).toHaveBeenCalledTimes(1);
+      // No frame ran on the released audio graph.
+      expect(analyser.getFloatTimeDomainData).not.toHaveBeenCalled();
     });
 
     it("can be called from a subscriber in the middle of a frame", async () => {

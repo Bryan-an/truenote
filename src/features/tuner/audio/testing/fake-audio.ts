@@ -72,6 +72,10 @@ export class FakeAudioContext {
   readonly analysers: FakeAnalyserNode[] = [];
 
   readonly resume = vi.fn(async () => {
+    if (this.resumeError !== undefined) {
+      throw this.resumeError;
+    }
+
     this.state = "running";
   });
 
@@ -96,10 +100,16 @@ export class FakeAudioContext {
   });
 
   private readonly readInput: () => Float32Array;
+  private readonly resumeError: unknown;
 
-  constructor(sampleRate: number, readInput: () => Float32Array) {
+  constructor(
+    sampleRate: number,
+    readInput: () => Float32Array,
+    resumeError?: unknown,
+  ) {
     this.sampleRate = sampleRate;
     this.readInput = readInput;
+    this.resumeError = resumeError;
   }
 }
 
@@ -122,6 +132,8 @@ export type FakeAudioOptions = {
   microphoneError?: unknown;
   // Leaves each microphone request pending until `resolveMicrophone()`.
   deferMicrophone?: boolean;
+  // Makes every context fail to resume, as when the audio hardware cannot start.
+  resumeError?: unknown;
 };
 
 // Replaces `navigator` and `AudioContext` through `vi.stubGlobal`. The test file restores them
@@ -130,6 +142,7 @@ export function installFakeAudio({
   sampleRate = DEFAULT_SAMPLE_RATE,
   microphoneError,
   deferMicrophone = false,
+  resumeError,
 }: FakeAudioOptions = {}): FakeAudio {
   const contexts: FakeAudioContext[] = [];
   const tracks: FakeMediaStreamTrack[] = [];
@@ -139,7 +152,7 @@ export function installFakeAudio({
 
   class InstalledAudioContext extends FakeAudioContext {
     constructor() {
-      super(sampleRate, () => input);
+      super(sampleRate, () => input, resumeError);
       contexts.push(this);
     }
   }

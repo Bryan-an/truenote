@@ -205,14 +205,22 @@ export function createTunerEngine(): TunerEngine {
 
       const startSession = session;
 
+      // A failure that arrives after `stop()` has nothing left to release or report.
+      const failThisSession = (error: unknown): void => {
+        if (startSession === session) {
+          fail(error);
+        }
+      };
+
       try {
         // iOS only unlocks audio inside the tap handler. Everything up to the `await` below runs
         // synchronously in it: creating the context, resuming it, and calling `getUserMedia`.
         const startingContext = new AudioContext();
 
         context = startingContext;
-        // Resuming is rejected when `stop()` closes the context first, which needs no handling.
-        startingContext.resume().catch(ignoreRejection);
+        // A context that cannot resume hears nothing, so the tuner must not sit in "listening".
+        // Not awaited: `getUserMedia` has to be called in this same tap.
+        startingContext.resume().catch(failThisSession);
         publishStatus(TUNER_STATUS.REQUESTING_PERMISSION);
 
         const stream = await requestMicrophone();
@@ -238,13 +246,12 @@ export function createTunerEngine(): TunerEngine {
         const [track] = stream.getAudioTracks();
         const microphoneSettings = track.getSettings();
 
-        publishStatus(TUNER_STATUS.LISTENING);
+        // The loop is booked before subscribers hear of it, so one that answers with `stop()`
+        // cancels it.
         listen(startingContext, analyser, microphoneSettings);
+        publishStatus(TUNER_STATUS.LISTENING);
       } catch (error) {
-        // A failure that arrives after `stop()` has nothing left to release or report.
-        if (startSession === session) {
-          fail(error);
-        }
+        failThisSession(error);
       }
     },
 
