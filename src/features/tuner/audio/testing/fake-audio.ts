@@ -72,8 +72,11 @@ export class FakeAudioContext {
   readonly analysers: FakeAnalyserNode[] = [];
 
   readonly resume = vi.fn(async () => {
-    if (this.resumeError !== undefined) {
-      throw this.resumeError;
+    await this.waitForResume();
+
+    // As in a browser, a context that was closed in the meantime rejects instead of running.
+    if (this.state === "closed") {
+      throw new DOMException("The context is closed", "InvalidStateError");
     }
 
     this.state = "running";
@@ -100,16 +103,16 @@ export class FakeAudioContext {
   });
 
   private readonly readInput: () => Float32Array;
-  private readonly resumeError: unknown;
+  private readonly waitForResume: () => Promise<void>;
 
   constructor(
     sampleRate: number,
     readInput: () => Float32Array,
-    resumeError?: unknown,
+    waitForResume: () => Promise<void> = () => Promise.resolve(),
   ) {
     this.sampleRate = sampleRate;
     this.readInput = readInput;
-    this.resumeError = resumeError;
+    this.waitForResume = waitForResume;
   }
 }
 
@@ -124,6 +127,8 @@ export type FakeAudio = {
   // With `deferMicrophone`, answers every request that is still waiting, like the user answering
   // the permission prompt.
   resolveMicrophone(): void;
+  // With `deferResume`, settles every `resume()` that is still waiting.
+  resolveResume(): void;
 };
 
 export type FakeAudioOptions = {
@@ -134,6 +139,8 @@ export type FakeAudioOptions = {
   deferMicrophone?: boolean;
   // Makes every context fail to resume, as when the audio hardware cannot start.
   resumeError?: unknown;
+  // Leaves each `resume()` pending until `resolveResume()`.
+  deferResume?: boolean;
 };
 
 // Replaces `navigator` and `AudioContext` through `vi.stubGlobal`. The test file restores them
@@ -143,16 +150,36 @@ export function installFakeAudio({
   microphoneError,
   deferMicrophone = false,
   resumeError,
+  deferResume = false,
 }: FakeAudioOptions = {}): FakeAudio {
   const contexts: FakeAudioContext[] = [];
   const tracks: FakeMediaStreamTrack[] = [];
   const pendingRequests: (() => void)[] = [];
+  const pendingResumes: (() => void)[] = [];
   const hasMicrophoneError = microphoneError !== undefined;
   let input: Float32Array = new Float32Array(DEFAULT_FFT_SIZE);
 
+  function waitForResume(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const settle = (): void => {
+        if (resumeError === undefined) {
+          resolve();
+        } else {
+          reject(resumeError);
+        }
+      };
+
+      if (deferResume) {
+        pendingResumes.push(settle);
+      } else {
+        settle();
+      }
+    });
+  }
+
   class InstalledAudioContext extends FakeAudioContext {
     constructor() {
-      super(sampleRate, () => input, resumeError);
+      super(sampleRate, () => input, waitForResume);
       contexts.push(this);
     }
   }
@@ -202,6 +229,12 @@ export function installFakeAudio({
     resolveMicrophone() {
       for (const answer of pendingRequests.splice(0)) {
         answer();
+      }
+    },
+
+    resolveResume() {
+      for (const settle of pendingResumes.splice(0)) {
+        settle();
       }
     },
   };

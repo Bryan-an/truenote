@@ -420,23 +420,53 @@ describe("createTunerEngine", () => {
       expect(engine.getSnapshot().status).toBe(TUNER_STATUS.ERROR);
     });
 
-    it("does not stay listening when the audio cannot resume", async () => {
+    it("leaves listening when the audio fails to resume afterwards", async () => {
       const audio = installFakeAudio({
+        sampleRate: SAMPLE_RATE,
+        deferResume: true,
         resumeError: new DOMException("No audio device", "InvalidStateError"),
       });
       const engine = createTunerEngine();
+      const statuses = recordStatuses(engine);
 
+      audio.setInput(A_STRING_SINE);
       await engine.start();
+      vi.advanceTimersToNextFrame();
+
+      // The microphone answered first, so the engine is already listening.
+      expect(engine.getSnapshot().status).toBe(TUNER_STATUS.LISTENING);
+      expect(audio.contexts[0].state).toBe("suspended");
+
+      audio.resolveResume();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      const [context] = audio.contexts;
+      const [source] = context.sources;
+      const [analyser] = context.analysers;
+      const framesBeforeFailure =
+        analyser.getFloatTimeDomainData.mock.calls.length;
+
+      expect(engine.getSnapshot()).toEqual({
+        status: TUNER_STATUS.ERROR,
+        error: TUNER_ERROR.MICROPHONE_UNAVAILABLE,
+        reading: null,
+        diagnostics: null,
+      });
+
+      expect(statuses.at(-1)).toBe(TUNER_STATUS.ERROR);
+      expect(audio.tracks[0].stop).toHaveBeenCalledTimes(1);
+      expect(source.disconnect).toHaveBeenCalledTimes(1);
+      expect(analyser.disconnect).toHaveBeenCalledTimes(1);
+      expect(context.close).toHaveBeenCalledTimes(1);
+
       vi.advanceTimersByTime(A_FEW_FRAMES_MS);
 
-      expect(engine.getSnapshot().status).toBe(TUNER_STATUS.ERROR);
-
-      expect(engine.getSnapshot().error).toBe(
-        TUNER_ERROR.MICROPHONE_UNAVAILABLE,
+      expect(analyser.getFloatTimeDomainData).toHaveBeenCalledTimes(
+        framesBeforeFailure,
       );
 
-      expect(audio.tracks[0].stop).toHaveBeenCalledTimes(1);
-      expect(audio.contexts[0].close).toHaveBeenCalledTimes(1);
+      expect(engine.getSnapshot().status).toBe(TUNER_STATUS.ERROR);
     });
 
     it("ignores a resume that fails because stop closed the context", async () => {
